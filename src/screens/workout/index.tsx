@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import * as S from "./styled";
+import Layout from "../../components/layout";
 
 import WorkoutConfiguration from "./configuration";
 
@@ -12,13 +12,13 @@ export default function Workout() {
   const [workoutPlan, setWorkoutPlan] = useState<WorkoutPlan>([]);
 
   return (
-    <S.Container>
+    <Layout>
       <WorkoutConfiguration
         workoutPlan={workoutPlan}
         setSetCount={setSetCount}
         setInterSetRest={setInterSetRest}
         setWorkoutPlan={setWorkoutPlan}
       />
-    </S.Container>
+    </Layout>
   );
 }

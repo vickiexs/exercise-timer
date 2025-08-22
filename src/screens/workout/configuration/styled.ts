@@ -11,7 +11,7 @@ export const Container = styled(View)(({ theme }) => ({
 export const Title = styled(Text)(({ theme }) => ({
   fontFamily: theme.fonts.family,
   fontWeight: theme.fonts.weights.medium as any,
-  fontSize: theme.fonts.sizes.large,
+  fontSize: theme.fontSize(7),
   color: theme.palette.white,
 }));
 
@@ -25,7 +25,7 @@ export const InputRow = styled(View)(({ theme }) => ({
 export const InputLabel = styled(Text)(({ theme }) => ({
   fontFamily: theme.fonts.family,
   fontWeight: theme.fonts.weights.regular as any,
-  fontSize: theme.fonts.sizes.small,
+  fontSize: theme.fontSize(4),
   color: theme.palette.white,
 }));
 
@@ -68,7 +68,7 @@ export const WorkoutPlanContainer = styled(View)(({ theme }) => ({
 export const ModalHeading = styled(Text)(({ theme }) => ({
   fontFamily: theme.fonts.family,
   fontWeight: theme.fonts.weights.medium as any,
-  fontSize: theme.fonts.sizes.medium,
+  fontSize: theme.fontSize(5),
   color: theme.palette.black,
   marginTop: "8px",
   marginBottom: "12px",
@@ -77,7 +77,7 @@ export const ModalHeading = styled(Text)(({ theme }) => ({
 export const ModalLabel = styled(Text)(({ theme }) => ({
   fontFamily: theme.fonts.family,
   fontWeight: theme.fonts.weights.medium as any,
-  fontSize: theme.fonts.sizes.small,
+  fontSize: theme.fontSize(4),
   color: theme.palette.black,
   marginTop: "12px",
   marginBottom: "4px",
@@ -115,7 +115,7 @@ export const SegmentButtonText = styled(Text)<SegmentProps>(
   ({ theme, active }) => ({
     fontFamily: theme.fonts.family,
     fontWeight: theme.fonts.weights.medium as any,
-    fontSize: theme.fonts.sizes.small,
+    fontSize: theme.fontSize(4),
     color: active ? theme.palette.white : theme.palette.black,
   })
 );
@@ -139,7 +139,7 @@ export const PlanItem = styled(View)<{ variant: "exercise" | "rest" }>(
 export const PlanItemText = styled(Text)(({ theme }) => ({
   fontFamily: theme.fonts.family,
   fontWeight: theme.fonts.weights.regular as any,
-  fontSize: theme.fonts.sizes.small,
+  fontSize: theme.fontSize(4),
   color: theme.palette.white,
 }));
 

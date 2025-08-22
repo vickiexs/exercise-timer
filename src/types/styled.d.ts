@@ -17,21 +17,17 @@ declare module "styled-components/native" {
       white: string;
       black: string;
       grey: string;
+      disabled: string;
     };
     fonts: {
       family: string;
-      sizes: {
-        large: string;
-        medium: string;
-        small: string;
-      };
       weights: {
         regular: number;
         medium: number;
       };
     };
-    spacing: (n: number) => string;
-    fontSize: (n: number) => string;
+    spacing: (n: number) => number;
+    fontSize: (n: number) => number;
     borderRadius: {
       small: string;
       medium: string;

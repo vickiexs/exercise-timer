@@ -1,102 +1,89 @@
 # Copilot Instructions for exercise-timer
 
-Purpose: Enable AI agents to make fast, consistent contributions to this Expo + React Native + TypeScript app. Follow these project-specific patterns (avoid generic boilerplate advice).
+Purpose: Help AI agents make fast, correct contributions to this Expo + React Native + TypeScript app. Focus on project-specific patterns, theming, and where to add logic so changes fit the existing architecture.
 
-## 1. Architecture & Flow
+1. Big picture
 
-- Entry: `App.tsx` loads fonts (Poppins) and wraps the app in `ThemeProvider` with `theme.ts`.
-- Primary feature domain: `src/screens/workout/`.
-  - `configuration/` screen collects workout parameters and opens an exercise/rest modal.
-  - Future flow (timer execution) will live under `src/screens/workout/timer/` (currently empty).
-- Reusable UI primitives in `src/components/` (e.g., `button`, `input`, `modal`). Each component: `index.tsx`, optional `styled.ts(x)`, `type.ts`.
-- The workout configuration screen manages transient modal form state locally (not yet persisted to a store).
+- Entry: `App.tsx` loads Poppins fonts and wraps the app in `ThemeProvider` using `theme.ts`.
+- UI primitives live under `src/components/` (button, input, layout, modal, typography). Each component typically contains `index.tsx`, `styled.ts`, and `type.ts` when types are needed.
+- Screens are under `src/screens/`. Two active feature flows:
+  - `simple-timer/` — contains `configuration/` and `timer/` flows used by the app today.
+  - `workout/` — planned/parallel domain (configuration modal patterns live here in earlier drafts).
+- Domain types for simple timer are in `src/screens/simple-timer/type.ts` (use these types when wiring screens together).
 
-## 2. Theming & Styling
+2. Theming & styling (important)
 
-- Theme definition: `theme.ts`; types: `src/types/styled.d.ts` (keep in sync when adding keys).
-- Palette keys (current): `primary.main`, `secondary.main`, `tertiary.main`, `background`, `white`, `black`, `grey`.
-- Fonts: `theme.fonts.family = 'Poppins'`; weights: `regular`, `medium`; sizes: `large|medium|small`.
-- Spacing helper: `theme.spacing(n)` returns rem-like string; use for padding/margins instead of literals where possible.
-- Always reference theme inside styled callbacks: `({ theme }) => ({ ... })`.
-- Avoid mutating `Text.defaultProps`; rely on styled components pulling `theme.fonts.family`.
+- Theme: `theme.ts`. Keep `src/types/styled.d.ts` in sync whenever adding theme keys.
+- Use theme helpers rather than literals:
+  - Colors: `theme.palette.*` (primary.main, secondary.main, tertiary.main, background, white, black, grey)
+  - Spacing: `theme.spacing(n)` returns px string; prefer this for padding/margins
+  - Font sizes: `theme.fontSize(n)` returns a number used for fontSize
+  - Radii: `theme.borderRadius.small|medium|large`
+- Files that demonstrate usage: `src/components/layout/styled.ts`, `src/components/input/styled.ts`, `src/components/typography/styled.ts`.
 
-## 3. Styled Component Conventions
+3. Styled-components conventions
 
-- Use object style syntax (`styled(View)(({ theme }) => ({ ... }))`) not template strings (legacy code exists—prefer object when touching files).
-- Never hardcode colors or font families if a theme value exists.
-- Use theme radii: `borderRadius.small` / `borderRadius.large`.
-- Keep layout primitives minimal; compose instead of prop-heavy components.
+- Prefer object-style callbacks: styled(View)(({ theme }) => ({ ... })) — do not introduce template literal CSS for new work.
+- Never hardcode theme colors or font families when an equivalent theme value exists.
+- When adding new theme keys, update both `theme.ts` and `src/types/styled.d.ts` in the same change.
 
-## 4. Components & Patterns
+4. Component & file patterns
 
-- Buttons: `src/components/button/` wraps a styled `TouchableOpacity` (do NOT style RN `Button`—it ignores most styles). Variants handled via separate styled components (`PrimaryButton`, `SecondaryButton`).
-- Inputs: `src/components/input/` centralizes input styling (centered numeric fields, consistent borders, font, and sizing).
-- Modal: `src/components/modal/` uses `Modal` + blur/dim + card (`ContentCard`) and manages Android nav bar transparency (see `expo-navigation-bar` usage). When adding new modal content, just pass children.
+- Buttons: `src/components/button/` uses a styled `TouchableOpacity` as `Button` base and separate variants (`PrimaryButton`, `SecondaryButton`). Example: `PrimaryButton = styled(Button)<{ disabled?: boolean }>(( { theme, disabled }) => ({ backgroundColor: theme.palette.primary.main, opacity: disabled ? 0.5 : 1 }))`.
+- Inputs: `src/components/input/` contains `Input` which composes a Label and a styled TextInput. Numeric inputs use `centreText` prop and `keyboardType="numeric"`.
+- Layout: use `src/components/layout/Container` to preserve padding and background color.
+- Modal: `src/components/modal/index.tsx` manages Android nav bar via `expo-navigation-bar`. Follow that pattern for full-screen overlays.
 
-## 5. Workout Configuration Screen Structure
+5. Screens and state
 
-- File: `src/screens/workout/configuration/index.tsx`.
-- Uses: `InputRow`, `InputLabel`, `InputContainer`, `WorkoutPlanSection`, modal-driven form for exercises/rest.
-- Modal form local state: `exerciseName`, `repMode` ("duration" | "count"), `repValue`, `restDuration`.
-- Future enhancement: persist added exercises to a list inside `WorkoutPlanContainer` (currently placeholder text).
+- Configuration screens collect transient state locally (e.g., `src/screens/simple-timer/configuration/index.tsx`). They should not introduce global state unless requested.
+- Timer implementation lives in `src/screens/simple-timer/timer/index.tsx`. It currently:
+  - Destructures config: `{ sets, reps, interSetRest, interRepRest, repWorkTime }` and initializes local state
+  - Uses setInterval managed via a ref and `isRunning` boolean
+  - Vibrates on the last 3 seconds (see `playTick()` using `Vibration.vibrate(120)`).
+- When adding new timed logic, prefer immutable updates and keep transitions (work→rest→rep→set) colocated inside the timer screen until a domain model exists.
 
-## 6. Adding Data Logic (When Implemented)
+6. Patterns for keyboard handling
 
-- Prefer introducing a lightweight domain model (e.g., `Exercise { id, name, type: 'duration'|'count', value, restAfter? }`) in a new `src/domain/` folder before wiring timers.
-- Maintain immutable arrays when updating plan state (avoid in-place mutation for easier future state management / potential context integration).
+- Use `KeyboardAvoidingView` + `ScrollView` in configuration screens to avoid the native keyboard covering inputs. See `src/screens/simple-timer/configuration/index.tsx` for the current pattern.
 
-## 7. Navigation & System UI
+7. Navigation & success flow
 
-- Android navigation bar styling handled in `modal/index.tsx` via `expo-navigation-bar`. Preserve or extend this pattern if adding other full-screen overlays.
-- For new full-screen screens, ensure background color is `theme.palette.background` so transparent system bars blend correctly.
+- Uses `@react-navigation/native`. Timer navigates to `Success` when complete (`navigation.navigate("Success")`). If adding new routes, update navigation stacks in `App.tsx`/navigation entry.
 
-## 8. Code Style & TypeScript
+8. Tooling & runtime commands
 
-- Strict TS mode is enabled; favor explicit prop interfaces (`type.ts`).
-- When extending theme, update both `theme.ts` and `styled.d.ts` in the same PR/commit.
-- Avoid `any`; if temporary, document with a TODO comment.
+- Start the app with the existing scripts in `package.json`:
+  - npm: `npm run start` (or `npm run ios` / `npm run android`)
+  - yarn: `yarn start` (or `yarn ios` / `yarn android`)
+- Project is Expo-managed (see `expo` dependency); avoid modifying native Android/iOS files unless necessary.
 
-## 9. Common Pitfalls (Project-Specific)
+9. TypeScript & typings
 
-- Styling RN `Button` won’t work—always use custom `TouchableOpacity` variants.
-- Forgetting to load new font weights in `App.tsx` while adding them to theme causes runtime fallback (ensure both sides updated).
-- Hardcoded dimensions without spacing utility create inconsistency—prefer `theme.spacing()` for padding/margins.
-- Android nav bar may override transparency if not updated through `expo-navigation-bar` when presenting overlays.
+- Strict TS is enabled. Add explicit prop `type.ts` files for new components/screens.
+- Theme augmentation is in `src/types/styled.d.ts` — update whenever `theme.ts` changes.
+- Avoid `any`; if temporary, add a TODO explaining why.
 
-## 10. Example Snippets
+10. Quick examples (copy when appropriate)
 
-Button variant pattern:
+- Destructure config at top of timer:
+  - const { sets, reps, interSetRest, interRepRest, repWorkTime } = workoutConfig;
+- Primary button disabled styling:
+  - export const PrimaryButton = styled(Button)<{ disabled?: boolean }>(({ theme, disabled }) => ({ backgroundColor: theme.palette.primary.main, opacity: disabled ? 0.5 : 1 }));
+- Keyboard-aware configuration screen:
+  - Wrap in KeyboardAvoidingView (behavior = 'padding' on iOS) and a ScrollView with keyboardShouldPersistTaps="handled".
 
-```ts
-export const PrimaryButton = styled(ButtonBase)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
-  borderRadius: theme.borderRadius.large,
-}));
-```
+11. Where to look first when editing
 
-Typography example:
+- UI primitives: `src/components/*` for consistent styling patterns
+- Theme & types: `theme.ts` and `src/types/styled.d.ts`
+- Timer logic: `src/screens/simple-timer/timer/index.tsx`
+- Configuration form: `src/screens/simple-timer/configuration/index.tsx`
 
-```ts
-export const SectionTitle = styled(Text)(({ theme }) => ({
-  fontFamily: theme.fonts.family,
-  fontWeight: theme.fonts.weights.medium as any,
-  fontSize: theme.fonts.sizes.medium,
-  color: theme.palette.white,
-}));
-```
+12. Non-obvious gotchas
 
-Modal usage:
+- Do not style RN's built-in `Button` — use the project's `TouchableOpacity` variants.
+- When adding theme values, missing font weights in `App.tsx` font-loader will cause runtime fallback.
+- Avoid template-style styled-components when modifying files that currently use the object callback pattern.
 
-```tsx
-<AppModal visible={show} onClose={() => setShow(false)}>
-  <CustomForm />
-</AppModal>
-```
-
-## 11. When In Doubt
-
-- Search existing styled files for pattern reuse.
-- Keep new logic colocated; refactor only once feature boundaries emerge.
-- Ask to clarify intended data flow before introducing global state.
-
-Please review and indicate any missing domain details (e.g., planned timer mechanics) you want documented.
+If anything here is unclear or you want more detail about the planned timer mechanics or data model (e.g., Exercise domain model), tell me which area to expand and I will iterate.

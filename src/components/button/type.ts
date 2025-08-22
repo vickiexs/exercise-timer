@@ -1,7 +1,7 @@
 export interface ButtonProps {
   label: string;
   variant?: "primary" | "secondary";
-  mode?: "dark" | "light";
   disabled?: boolean;
+  style?: object;
   handleOnPress: () => void;
 }

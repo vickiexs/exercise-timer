@@ -16,9 +16,14 @@ export const ButtonText = styled(Text)(({ theme }) => ({
   marginTop: "2px",
 }));
 
-export const PrimaryButton = styled(Button)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
-}));
+export const PrimaryButton = styled(Button)<{ disabled?: boolean }>(
+  ({ theme, disabled }) => ({
+    backgroundColor: disabled
+      ? theme.palette.disabled
+      : theme.palette.primary.main,
+    opacity: disabled ? 0.5 : 1,
+  })
+);
 
 export const SecondaryButton = styled(Button)(({ theme }) => ({
   backgroundColor: "transparent",

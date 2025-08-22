@@ -16,21 +16,17 @@ export const theme: DefaultTheme = {
     white: "#ffffff",
     black: "#000000",
     grey: "#EAEAEA",
+    disabled: "#999999",
   },
   fonts: {
     family: "Poppins",
-    sizes: {
-      large: "28px",
-      medium: "18px",
-      small: "16px",
-    },
     weights: {
       regular: 400,
       medium: 500,
     },
   },
-  spacing: (n: number) => `${n * 4}px`,
-  fontSize: (n: number) => `${n * 4}px`,
+  spacing: (n: number) => n * 4,
+  fontSize: (n: number) => n * 4,
   borderRadius: {
     small: "7px",
     medium: "10px",
