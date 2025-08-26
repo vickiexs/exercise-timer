@@ -28,9 +28,9 @@ export const theme: DefaultTheme = {
   spacing: (n: number) => n * 4,
   fontSize: (n: number) => n * 4,
   borderRadius: {
-    small: "7px",
-    medium: "10px",
-    large: "30px",
+    small: 10,
+    medium: 20,
+    large: 30,
   },
 };
 

@@ -5,7 +5,7 @@ import {
   NavigationProp,
 } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
-import { Vibration } from "react-native";
+import { Vibration, View } from "react-native";
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
@@ -15,7 +15,7 @@ import IconButton from "@components/icon-button";
 import ProgressBar from "@components/progress-bar";
 
 import { formatTime } from "@lib/utils";
-import { SCREENS, TIMER_TYPE } from "@lib/constants";
+import { REP_MODE, SCREENS, TIMER_TYPE } from "@lib/constants";
 
 import * as S from "./styled";
 
@@ -35,7 +35,7 @@ export default function TimerScreen({
   const [currentSet, setCurrentSet] = useState(1);
   const [currentRep, setCurrentRep] = useState(1);
   const [isPaused, setIsPaused] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(workout[0]?.repValue || 0);
+  const [timeLeft, setTimeLeft] = useState(workout[0].repValue);
 
   const intervalRef = useRef<number | null>(null);
   const isLastSet = currentSet === sets;
@@ -43,7 +43,7 @@ export default function TimerScreen({
   const isLastItem = currentIndex === workout.length - 1;
 
   useEffect(() => {
-    if (!isPaused) {
+    if (!isPaused && workout[currentIndex].repMode === REP_MODE.DURATION) {
       intervalRef.current = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000) as unknown as number;
@@ -55,7 +55,7 @@ export default function TimerScreen({
         intervalRef.current = null;
       }
     };
-  }, [isPaused]);
+  }, [isPaused, currentIndex]);
 
   useEffect(() => {
     if (timeLeft > 3) return;
@@ -96,7 +96,9 @@ export default function TimerScreen({
       return;
     }
 
-    startNextSet();
+    setCurrentSet((prev) => prev + 1);
+    setCurrentRep(1);
+    setCurrentIndex(0);
   };
 
   const timerColor = useMemo(
@@ -106,12 +108,6 @@ export default function TimerScreen({
         : theme.palette.tertiary.main,
     [currentIndex]
   );
-
-  const startNextSet = () => {
-    setCurrentSet((prev) => prev + 1);
-    setCurrentRep(1);
-    setCurrentIndex(0);
-  };
 
   const nextExercise = () => {
     let index = currentIndex + 1;
@@ -183,16 +179,36 @@ export default function TimerScreen({
           fillColor={theme.palette.white}
         />
       </S.ProgressContainer>
+
       <S.ProgressContainer>
         <Typography variant="subheading" color={timerColor}>
           {workout[currentIndex].name}
         </Typography>
-        <S.TimerValue color={timerColor}>{formatTime(timeLeft)}</S.TimerValue>
-        <ProgressBar
-          progress={(1 - timeLeft / workout[currentIndex].repValue) * 100}
-          fillColor={timerColor}
-        />
+        {workout[currentIndex].repMode === REP_MODE.DURATION ? (
+          <S.TimerContainer>
+            <S.TimerValue color={timerColor}>
+              {formatTime(timeLeft)}
+            </S.TimerValue>
+            <ProgressBar
+              progress={(1 - timeLeft / workout[currentIndex].repValue) * 100}
+              fillColor={timerColor}
+            />
+          </S.TimerContainer>
+        ) : (
+          <View>
+            <S.RepCount color={timerColor}>
+              {`${workout[currentIndex].repValue} reps`}
+            </S.RepCount>
+            <Button
+              label="Complete"
+              variant="primary"
+              handleOnPress={() => setCurrentIndex((prev) => prev + 1)}
+              style={{ marginTop: theme.spacing(2) }}
+            />
+          </View>
+        )}
       </S.ProgressContainer>
+
       <S.ButtonContainer>
         <S.Controls>
           <IconButton
@@ -206,7 +222,10 @@ export default function TimerScreen({
             <MaterialIcons name="skip-previous" size={32} color="white" />
           </IconButton>
 
-          <IconButton onPress={() => setIsPaused((prev) => !prev)}>
+          <IconButton
+            onPress={() => setIsPaused((prev) => !prev)}
+            disabled={workout[currentIndex].repMode === REP_MODE.COUNT}
+          >
             <MaterialIcons
               name={isPaused ? "play-arrow" : "pause"}
               size={32}

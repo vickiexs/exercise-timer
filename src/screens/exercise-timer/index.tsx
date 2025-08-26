@@ -31,7 +31,7 @@ export default function ExerciseTimer({
     if (configType === CONFIG_TYPE.SIMPLE) {
       return <SimpleConfigScreen onStart={handleStartWorkout} />;
     } else {
-      return <WorkoutPlanConfigScreen />;
+      return <WorkoutPlanConfigScreen onStart={handleStartWorkout} />;
     }
   };
 

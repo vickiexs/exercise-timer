@@ -10,11 +10,9 @@ import Button from "@components/button";
 
 import * as S from "./styled";
 
-import { SimpleConfigScreenProps, WorkoutPlan } from "../type";
+import { ConfigScreenProps, WorkoutPlan } from "../type";
 
-export default function SimpleConfigScreen({
-  onStart,
-}: SimpleConfigScreenProps) {
+export default function SimpleConfigScreen({ onStart }: ConfigScreenProps) {
   useCustomNavigateOnBack(SCREENS.HOME);
 
   const [sets, setSets] = useState<number>();
@@ -78,7 +76,7 @@ export default function SimpleConfigScreen({
         style={{ gap: 10 }}
       >
         <Typography variant="heading" style={{ marginBottom: 20 }}>
-          Exercise Timer
+          Configure Timer
         </Typography>
         <Typography variant="body">Configure your workout settings:</Typography>
         <S.Container>

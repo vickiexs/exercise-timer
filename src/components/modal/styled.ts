@@ -1,21 +1,17 @@
 import styled from "styled-components/native";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View } from "react-native";
 
-export const Background = styled(View)(() => ({
+export const Background = styled(View)(({ theme }) => ({
   flex: 1,
-  justifyContent: "center",
-  alignItems: "center",
   backgroundColor: "rgba(0, 0, 0, 0.5)",
   height: "100%",
 }));
 
-export const ModalContent = styled(View)(() => ({
-  width: 300,
-  padding: 20,
-  backgroundColor: "white",
-  borderRadius: 10,
-}));
-
-export const CloseButton = styled(TouchableOpacity)(() => ({
-  alignSelf: "flex-end",
+export const ModalContent = styled(View)(({ theme }) => ({
+  position: "absolute",
+  bottom: 0,
+  width: "100%",
+  height: "100%",
+  padding: theme.spacing(6),
+  backgroundColor: theme.palette.white,
 }));

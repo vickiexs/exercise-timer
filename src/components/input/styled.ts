@@ -20,11 +20,12 @@ export const Input = styled(TextInput)<{
   centreText: boolean;
 }>(({ theme, mode, centreText }) => ({
   width: "100%",
-  height: "36px",
-  borderWidth: "1px",
+  height: 36,
+  borderWidth: 1,
   borderColor: mode === "dark" ? theme.palette.white : theme.palette.text,
   borderRadius: theme.borderRadius.small,
-  padding: "6px 10px",
+  paddingHorizontal: 10,
+  paddingVertical: 6,
   color: mode === "dark" ? theme.palette.white : theme.palette.text,
   backgroundColor: "transparent",
   fontFamily: theme.fonts.family,

@@ -29,9 +29,9 @@ declare module "styled-components/native" {
     spacing: (n: number) => number;
     fontSize: (n: number) => number;
     borderRadius: {
-      small: string;
-      medium: string;
-      large: string;
+      small: number;
+      medium: number;
+      large: number;
     };
   }
 }

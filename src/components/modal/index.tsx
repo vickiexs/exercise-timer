@@ -1,26 +1,44 @@
-import { Modal } from "react-native";
+import {
+  Modal,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
+import { useTheme } from "styled-components/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+
+import IconButton from "@components/icon-button";
 
 import * as S from "./styled";
 
 import { ModalProps } from "./type";
 
 export default function AppModal({ visible, onClose, children }: ModalProps) {
+  const theme = useTheme();
   return (
     <Modal
       animationType="slide"
-      transparent={true}
       visible={visible}
-      navigationBarTranslucent={true}
-      statusBarTranslucent={true}
+      navigationBarTranslucent
       onRequestClose={onClose}
     >
       <S.Background>
         <S.ModalContent>
-          <S.CloseButton onPress={onClose}>
-            <Ionicons name="close" size={28} color="black" />
-          </S.CloseButton>
-          {children}
+          <IconButton onPress={onClose} style={{ alignSelf: "flex-end" }}>
+            <Ionicons name="close" size={28} color={theme.palette.text} />
+          </IconButton>
+
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
+          >
+            <ScrollView
+              contentContainerStyle={{ flexGrow: 1 }}
+              showsVerticalScrollIndicator={false}
+            >
+              {children}
+            </ScrollView>
+          </KeyboardAvoidingView>
         </S.ModalContent>
       </S.Background>
     </Modal>

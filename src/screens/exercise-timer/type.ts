@@ -1,6 +1,6 @@
 import { REP_MODE, TIMER_TYPE, CONFIG_TYPE } from "@lib/constants";
 
-export interface SimpleConfigScreenProps {
+export interface ConfigScreenProps {
   onStart: (config: WorkoutPlan) => void;
 }
 
