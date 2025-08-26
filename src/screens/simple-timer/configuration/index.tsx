@@ -1,6 +1,9 @@
 import { useState, useMemo } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 
+import { SCREENS } from "../../../../lib/constants";
+import useCustomNavigateOnBack from "../../../../lib/hooks/useCustomNavigateOnBack";
+
 import Typography from "../../../components/typography";
 import Input from "../../../components/input";
 import Button from "../../../components/button";
@@ -12,6 +15,8 @@ import { ConfigurationScreenProps } from "../type";
 export default function ConfigurationScreen({
   onStart,
 }: ConfigurationScreenProps) {
+  useCustomNavigateOnBack(SCREENS.HOME);
+
   const [sets, setSets] = useState<number | undefined>();
   const [reps, setReps] = useState<number | undefined>();
   const [interSetRest, setInterSetRest] = useState<number | undefined>();

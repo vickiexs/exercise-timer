@@ -1,12 +1,22 @@
-import { useNavigation } from "@react-navigation/native";
+import React from "react";
 import { View } from "react-native";
+import {
+  useNavigation,
+  NavigationProp,
+  ParamListBase,
+} from "@react-navigation/native";
+
+import useCustomNavigateOnBack from "../../../lib/hooks/useCustomNavigateOnBack";
+import { SCREENS } from "../../../lib/constants";
 
 import Layout from "../../components/layout";
 import Typography from "../../components/typography";
 import Button from "../../components/button";
 
 export default function SuccessScreen() {
-  const navigation = useNavigation<any>();
+  const navigation: NavigationProp<ParamListBase> = useNavigation();
+
+  useCustomNavigateOnBack(SCREENS.HOME);
 
   return (
     <Layout>

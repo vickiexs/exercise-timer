@@ -1,11 +1,15 @@
-import { useNavigation } from "@react-navigation/native";
+import {
+  useNavigation,
+  NavigationProp,
+  ParamListBase,
+} from "@react-navigation/native";
 import { View } from "react-native";
 
 import Layout from "../../components/layout";
 import Button from "../../components/button";
 
 export default function HomeScreen() {
-  const navigation = useNavigation<any>();
+  const navigation: NavigationProp<ParamListBase> = useNavigation();
 
   return (
     <Layout>

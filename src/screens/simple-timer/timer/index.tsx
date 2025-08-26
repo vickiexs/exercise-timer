@@ -1,5 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import {
+  useNavigation,
+  ParamListBase,
+  NavigationProp,
+} from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { Vibration } from "react-native";
 
@@ -24,7 +28,7 @@ export default function TimerScreen({
   const { workout, sets, reps } = workoutPlan;
 
   const theme = useTheme();
-  const navigation = useNavigation<any>();
+  const navigation: NavigationProp<ParamListBase> = useNavigation();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentSet, setCurrentSet] = useState(1);

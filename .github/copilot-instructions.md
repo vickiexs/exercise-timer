@@ -1,89 +1,79 @@
-# Copilot Instructions for exercise-timer
+# Copilot instructions for exercise-timer (condensed)
 
-Purpose: Help AI agents make fast, correct contributions to this Expo + React Native + TypeScript app. Focus on project-specific patterns, theming, and where to add logic so changes fit the existing architecture.
+Purpose: get an AI agent productive quickly in this Expo + React Native + TypeScript app.
 
 1. Big picture
 
-- Entry: `App.tsx` loads Poppins fonts and wraps the app in `ThemeProvider` using `theme.ts`.
-- UI primitives live under `src/components/` (button, input, layout, modal, typography). Each component typically contains `index.tsx`, `styled.ts`, and `type.ts` when types are needed.
-- Screens are under `src/screens/`. Two active feature flows:
-  - `simple-timer/` — contains `configuration/` and `timer/` flows used by the app today.
-  - `workout/` — planned/parallel domain (configuration modal patterns live here in earlier drafts).
-- Domain types for simple timer are in `src/screens/simple-timer/type.ts` (use these types when wiring screens together).
+- Entry: `App.tsx` — loads Poppins fonts, wraps app with `ThemeProvider` (see `theme.ts`).
+- Feature areas: `src/components/` (UI primitives) and `src/screens/` (flows). Two active flows:
+  - `simple-timer/` — `configuration/` and `timer/` (primary app flow).
+  - `workout/` — parallel/planned domain; contains earlier modal/config patterns.
+- Keep UI primitives consistent: components under `src/components/*` are small, themed, and composable.
 
-2. Theming & styling (important)
+2. Theming & styled patterns (must follow)
 
-- Theme: `theme.ts`. Keep `src/types/styled.d.ts` in sync whenever adding theme keys.
-- Use theme helpers rather than literals:
-  - Colors: `theme.palette.*` (primary.main, secondary.main, tertiary.main, background, white, black, grey)
-  - Spacing: `theme.spacing(n)` returns px string; prefer this for padding/margins
-  - Font sizes: `theme.fontSize(n)` returns a number used for fontSize
-  - Radii: `theme.borderRadius.small|medium|large`
-- Files that demonstrate usage: `src/components/layout/styled.ts`, `src/components/input/styled.ts`, `src/components/typography/styled.ts`.
+- Theme lives in `theme.ts`. When adding theme keys, also update `src/types/styled.d.ts`.
+- Use theme helpers instead of literals:
+  - colors: `theme.palette.primary.main`, `secondary.main`, `tertiary.main`, `background`, `white`, `black`, `grey`
+  - spacing: `theme.spacing(n)` returns a px string
+  - font sizes: `theme.fontSize(n)` returns a number
+  - radii: `theme.borderRadius.small|medium|large`
+- styled-components: use object-style callbacks only — e.g. `styled(View)(({ theme }) => ({ ... }))`. Do not add template literal CSS.
 
-3. Styled-components conventions
+3. Component conventions
 
-- Prefer object-style callbacks: styled(View)(({ theme }) => ({ ... })) — do not introduce template literal CSS for new work.
-- Never hardcode theme colors or font families when an equivalent theme value exists.
-- When adding new theme keys, update both `theme.ts` and `src/types/styled.d.ts` in the same change.
+- Buttons: `src/components/button/` exports a base `Button` and variants like `PrimaryButton`/`SecondaryButton`. Follow the pattern for disabled styling and props.
+- Inputs: `src/components/input/` composes Label + styled TextInput. Numeric inputs use `centreText` and `keyboardType="numeric"`.
+- Layout: prefer `src/components/layout/Container` for screen padding & background.
+- Modal: `src/components/modal/index.tsx` manages Android nav bar (expo-navigation-bar). Follow that pattern for full-screen overlays.
 
-4. Component & file patterns
+4. Timer & configuration patterns
 
-- Buttons: `src/components/button/` uses a styled `TouchableOpacity` as `Button` base and separate variants (`PrimaryButton`, `SecondaryButton`). Example: `PrimaryButton = styled(Button)<{ disabled?: boolean }>(( { theme, disabled }) => ({ backgroundColor: theme.palette.primary.main, opacity: disabled ? 0.5 : 1 }))`.
-- Inputs: `src/components/input/` contains `Input` which composes a Label and a styled TextInput. Numeric inputs use `centreText` prop and `keyboardType="numeric"`.
-- Layout: use `src/components/layout/Container` to preserve padding and background color.
-- Modal: `src/components/modal/index.tsx` manages Android nav bar via `expo-navigation-bar`. Follow that pattern for full-screen overlays.
+- Timer state & logic live in `src/screens/simple-timer/timer/index.tsx`. When reading it, note:
+  - Destructures config: `{ sets, reps, interSetRest, interRepRest, repWorkTime }` at top.
+  - Uses setInterval controlled by ref + `isRunning` boolean.
+  - Transitions (work → rest → rep → set) are colocated in the timer screen.
+  - Ticking/vibration example: `Vibration.vibrate(120)` for last 3 seconds (see `playTick()`).
+- Configuration screens collect local transient state — e.g. `src/screens/simple-timer/configuration/index.tsx`. Do not add global state unless asked.
+- Keyboard handling: configuration screens use `KeyboardAvoidingView` + `ScrollView` with `keyboardShouldPersistTaps="handled"` (see `configuration/index.tsx`).
 
-5. Screens and state
+5. Navigation & Android back handling
 
-- Configuration screens collect transient state locally (e.g., `src/screens/simple-timer/configuration/index.tsx`). They should not introduce global state unless requested.
-- Timer implementation lives in `src/screens/simple-timer/timer/index.tsx`. It currently:
-  - Destructures config: `{ sets, reps, interSetRest, interRepRest, repWorkTime }` and initializes local state
-  - Uses setInterval managed via a ref and `isRunning` boolean
-  - Vibrates on the last 3 seconds (see `playTick()` using `Vibration.vibrate(120)`).
-- When adding new timed logic, prefer immutable updates and keep transitions (work→rest→rep→set) colocated inside the timer screen until a domain model exists.
+- Uses `@react-navigation/native`. Screens navigate via `navigation.navigate("RouteName")`.
+- Success flow: timer navigates to `Success` when complete (see `src/screens/success/index.tsx`).
+- Android hardware back: handle inside screen with `useFocusEffect` + `BackHandler` to control behavior while focused (example pattern used/expected in screens). Return `true` to block default.
 
-6. Patterns for keyboard handling
+6. TypeScript & typings
 
-- Use `KeyboardAvoidingView` + `ScrollView` in configuration screens to avoid the native keyboard covering inputs. See `src/screens/simple-timer/configuration/index.tsx` for the current pattern.
+- Project uses strict TS. Add explicit `type.ts` for new screens/components where appropriate.
+- Theme augmentation: `src/types/styled.d.ts` — update together with `theme.ts` changes.
+- Avoid `any`. If temporarily used, add a TODO comment explaining why.
 
-7. Navigation & success flow
+7. Developer workflows & commands
 
-- Uses `@react-navigation/native`. Timer navigates to `Success` when complete (`navigation.navigate("Success")`). If adding new routes, update navigation stacks in `App.tsx`/navigation entry.
+- Expo-managed project. Use package.json scripts:
+  - npm: `npm run start`, `npm run ios`, `npm run android`
+  - yarn equivalents: `yarn start`, `yarn ios`, `yarn android`
+- Do not modify native Android/iOS files unless absolutely necessary.
 
-8. Tooling & runtime commands
+8. Where to look first when editing
 
-- Start the app with the existing scripts in `package.json`:
-  - npm: `npm run start` (or `npm run ios` / `npm run android`)
-  - yarn: `yarn start` (or `yarn ios` / `yarn android`)
-- Project is Expo-managed (see `expo` dependency); avoid modifying native Android/iOS files unless necessary.
-
-9. TypeScript & typings
-
-- Strict TS is enabled. Add explicit prop `type.ts` files for new components/screens.
-- Theme augmentation is in `src/types/styled.d.ts` — update whenever `theme.ts` changes.
-- Avoid `any`; if temporary, add a TODO explaining why.
-
-10. Quick examples (copy when appropriate)
-
-- Destructure config at top of timer:
-  - const { sets, reps, interSetRest, interRepRest, repWorkTime } = workoutConfig;
-- Primary button disabled styling:
-  - export const PrimaryButton = styled(Button)<{ disabled?: boolean }>(({ theme, disabled }) => ({ backgroundColor: theme.palette.primary.main, opacity: disabled ? 0.5 : 1 }));
-- Keyboard-aware configuration screen:
-  - Wrap in KeyboardAvoidingView (behavior = 'padding' on iOS) and a ScrollView with keyboardShouldPersistTaps="handled".
-
-11. Where to look first when editing
-
-- UI primitives: `src/components/*` for consistent styling patterns
-- Theme & types: `theme.ts` and `src/types/styled.d.ts`
+- UI primitives: `src/components/*`
+- Theme & types: `theme.ts`, `src/types/styled.d.ts`
 - Timer logic: `src/screens/simple-timer/timer/index.tsx`
 - Configuration form: `src/screens/simple-timer/configuration/index.tsx`
 
-12. Non-obvious gotchas
+9. Non-obvious gotchas & rules
 
-- Do not style RN's built-in `Button` — use the project's `TouchableOpacity` variants.
-- When adding theme values, missing font weights in `App.tsx` font-loader will cause runtime fallback.
-- Avoid template-style styled-components when modifying files that currently use the object callback pattern.
+- Never use RN's built-in `Button` for new work — use the project's `TouchableOpacity` button variants.
+- Keep theming consistent: never hardcode theme colors or font families if theme provides them.
+- When adding theme keys, update font-loader in `App.tsx` if adding font weights.
+- Prefer immutable updates for timer state transitions and keep transition logic colocated inside timer screen until a domain model exists.
 
-If anything here is unclear or you want more detail about the planned timer mechanics or data model (e.g., Exercise domain model), tell me which area to expand and I will iterate.
+10. Examples (copy when appropriate)
+
+- Destructure config in timer: `const { sets, reps, interSetRest, interRepRest, repWorkTime } = workoutConfig;`
+- PrimaryButton disabled styling example lives in `src/components/button/styled.ts`.
+- Keyboard-aware config screen: wrap in `KeyboardAvoidingView` (behavior='padding' on iOS) + `ScrollView`.
+
+If anything is unclear or you want more detail about the timer model, navigation stacks, or theming keys, say which area to expand and I will iterate.
