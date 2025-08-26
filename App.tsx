@@ -16,6 +16,8 @@ import Workout from "./src/screens/workout";
 import SimpleTimer from "./src/screens/simple-timer";
 import SuccessScreen from "./src/screens/success";
 
+import { SCREENS } from "./lib/constants";
+
 const Stack = createNativeStackNavigator();
 
 const Root = styled.View(({ theme }) => ({
@@ -39,10 +41,10 @@ export default function App() {
         <StatusBar style="light" />
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="SimpleTimer" component={SimpleTimer} />
-            <Stack.Screen name="Workout" component={Workout} />
-            <Stack.Screen name="Success" component={SuccessScreen} />
+            <Stack.Screen name={SCREENS.HOME} component={HomeScreen} />
+            <Stack.Screen name={SCREENS.SIMPLE_TIMER} component={SimpleTimer} />
+            <Stack.Screen name={SCREENS.WORKOUT} component={Workout} />
+            <Stack.Screen name={SCREENS.SUCCESS} component={SuccessScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </Root>

@@ -1,3 +1,13 @@
+import { COUNT, DURATION, EXERCISE, REST } from "../../../lib/constants";
+
+export interface ConfigurationScreenProps {
+  onStart: (config: WorkoutConfig) => void;
+}
+
+export interface TimerScreenProps {
+  workoutPlan: WorkoutPlan;
+  setIsTimerActive: (active: boolean) => void;
+}
 export interface WorkoutConfig {
   sets: number;
   reps: number;
@@ -6,11 +16,15 @@ export interface WorkoutConfig {
   repWorkTime: number;
 }
 
-export interface ConfigurationScreenProps {
-  onStart: (config: WorkoutConfig) => void;
-}
+export type WorkoutPlan = {
+  workout: WorkoutItem[];
+  sets: number;
+  reps: number;
+};
 
-export interface TimerScreenProps {
-  workoutConfig: WorkoutConfig;
-  setIsTimerActive: (active: boolean) => void;
+export interface WorkoutItem {
+  name: string;
+  repMode: typeof COUNT | typeof DURATION;
+  repValue: number;
+  type: typeof EXERCISE | typeof REST;
 }

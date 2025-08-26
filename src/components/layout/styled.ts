@@ -7,5 +7,4 @@ export const Container = styled(View)(({ theme }) => ({
   backgroundColor: theme.palette.background,
   paddingHorizontal: theme.spacing(12),
   paddingVertical: theme.spacing(15),
-  paddingTop: 80,
 }));
