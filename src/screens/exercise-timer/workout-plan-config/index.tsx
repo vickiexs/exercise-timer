@@ -1,79 +1,73 @@
 import { useState } from "react";
 import { FlatList, ScrollView, View } from "react-native";
-import Button from "../../../components/button";
-import Input from "../../../components/input";
-import AppModal from "../../../components/modal";
+import Button from "@components/button";
+import Input from "@components/input";
+import AppModal from "@components/modal";
 
-import { DURATION, COUNT } from "../../../../lib/constants";
+import { REP_MODE } from "@lib/constants";
 
 import * as S from "./styled";
 
-import { Exercise } from "../type";
-import { WorkoutConfigurationProps } from "./type";
+import { WorkoutPlanConfigScreenProps } from "../type";
 
-export default function WorkoutConfiguration({
-  workoutPlan,
-  setSetCount,
-  setInterSetRest,
-  setWorkoutPlan,
-}: WorkoutConfigurationProps) {
+export default function WorkoutPlanConfigScreen({}: WorkoutPlanConfigScreenProps) {
+  const [sets, setSets] = useState<number>();
+  const [interSetRest, setInterSetRest] = useState<number>();
   const [modalVisible, setModalVisible] = useState(false);
   const [exerciseName, setExerciseName] = useState("");
-  const [repMode, setRepMode] = useState<typeof COUNT | typeof DURATION>(
-    DURATION
-  );
+  const [repMode, setRepMode] = useState<REP_MODE>(REP_MODE.DURATION);
   const [repValue, setRepValue] = useState(0);
   const [restDuration, setRestDuration] = useState(0);
 
-  const addExercise = () => {
-    if (exerciseName !== "" && repValue > 0) {
-      const updatedPlan = workoutPlan.concat([
-        {
-          name: exerciseName,
-          repMode: repMode,
-          repValue: repValue,
-        },
-      ]);
-      setWorkoutPlan(updatedPlan);
-      setExerciseName("");
-      setRepValue(0);
-    }
-  };
+  // const addExercise = () => {
+  //   if (exerciseName !== "" && repValue > 0) {
+  //     const updatedPlan = workoutPlan.concat([
+  //       {
+  //         name: exerciseName,
+  //         repMode: repMode,
+  //         repValue: repValue,
+  //       },
+  //     ]);
+  //     setWorkoutPlan(updatedPlan);
+  //     setExerciseName("");
+  //     setRepValue(0);
+  //   }
+  // };
 
-  const addRest = () => {
-    if (restDuration > 0) {
-      const updatedPlan = workoutPlan.concat([restDuration]);
-      setWorkoutPlan(updatedPlan);
-      setRestDuration(0);
-    }
-  };
+  // const addRest = () => {
+  //   if (restDuration > 0) {
+  //     const updatedPlan = workoutPlan.concat([restDuration]);
+  //     setWorkoutPlan(updatedPlan);
+  //     setRestDuration(0);
+  //   }
+  // };
 
-  const renderPlanItem = ({
-    item,
-  }: {
-    item: Exercise | number;
-    index: number;
-  }) => {
-    const isRest = typeof item === "number";
-    if (isRest) {
-      return (
-        <S.PlanItem variant="rest">
-          <S.PlanItemText>Rest</S.PlanItemText>
-          <S.PlanItemValue>{item} seconds</S.PlanItemValue>
-        </S.PlanItem>
-      );
-    }
-    const valueLabel =
-      item.repMode === COUNT
-        ? `${item.repValue} reps`
-        : `${item.repValue} seconds`;
-    return (
-      <S.PlanItem variant="exercise">
-        <S.PlanItemText>{item.name}</S.PlanItemText>
-        <S.PlanItemValue>{valueLabel}</S.PlanItemValue>
-      </S.PlanItem>
-    );
-  };
+  // const renderPlanItem = ({
+  //   item,
+  // }: {
+  //   item: Exercise | number;
+  //   index: number;
+  // }) => {
+  //   const isRest = typeof item === "number";
+  //   if (isRest) {
+  //     return (
+  //       <S.PlanItem variant="rest">
+  //         <S.PlanItemText>Rest</S.PlanItemText>
+  //         <S.PlanItemValue>{item} seconds</S.PlanItemValue>
+  //       </S.PlanItem>
+  //     );
+  //   }
+  //   const valueLabel =
+  //     item.repMode === COUNT
+  //       ? `${item.repValue} reps`
+  //       : `${item.repValue} seconds`;
+  //   return (
+  //     <S.PlanItem variant="exercise">
+  //       <S.PlanItemText>{item.name}</S.PlanItemText>
+  //       <S.PlanItemValue>{valueLabel}</S.PlanItemValue>
+  //     </S.PlanItem>
+  //   );
+  // };
 
   return (
     <S.Container>
@@ -83,7 +77,7 @@ export default function WorkoutConfiguration({
         <S.InputLabel>Sets</S.InputLabel>
         <S.InputContainer>
           <Input
-            onChangeText={(text) => setSetCount(Number(text))}
+            onChangeText={(text) => setSets(Number(text))}
             keyboardType="numeric"
             centreText
           />
@@ -109,7 +103,7 @@ export default function WorkoutConfiguration({
 
       <S.WorkoutPlanSection>
         <S.SectionTitle mode="dark">Workout Plan</S.SectionTitle>
-        <S.WorkoutPlanContainer>
+        {/* <S.WorkoutPlanContainer>
           {workoutPlan.length === 0 ? (
             <S.SectionDescription>No exercises added yet.</S.SectionDescription>
           ) : (
@@ -120,7 +114,7 @@ export default function WorkoutConfiguration({
               showsVerticalScrollIndicator={false}
             />
           )}
-        </S.WorkoutPlanContainer>
+        </S.WorkoutPlanContainer> */}
 
         <Button
           label="Start Workout"
@@ -143,18 +137,18 @@ export default function WorkoutConfiguration({
           <S.ModalLabel>Reps</S.ModalLabel>
           <S.SegmentedRow>
             <S.SegmentButton
-              active={repMode === DURATION}
-              onPress={() => setRepMode(DURATION)}
+              active={repMode === REP_MODE.DURATION}
+              onPress={() => setRepMode(REP_MODE.DURATION)}
             >
-              <S.SegmentButtonText active={repMode === DURATION}>
+              <S.SegmentButtonText active={repMode === REP_MODE.DURATION}>
                 Duration
               </S.SegmentButtonText>
             </S.SegmentButton>
             <S.SegmentButtonRight
-              active={repMode === COUNT}
-              onPress={() => setRepMode(COUNT)}
+              active={repMode === REP_MODE.COUNT}
+              onPress={() => setRepMode(REP_MODE.COUNT)}
             >
-              <S.SegmentButtonText active={repMode === COUNT}>
+              <S.SegmentButtonText active={repMode === REP_MODE.COUNT}>
                 Count
               </S.SegmentButtonText>
             </S.SegmentButtonRight>
@@ -163,15 +157,15 @@ export default function WorkoutConfiguration({
           <Input
             value={repValue > 0 ? String(repValue) : ""}
             onChangeText={(text) => setRepValue(Number(text))}
-            placeholder={repMode === COUNT ? "Reps" : "Seconds"}
+            placeholder={repMode === REP_MODE.COUNT ? "Reps" : "Seconds"}
             keyboardType="numeric"
             mode="light"
           />
-          <Button
+          {/* <Button
             label="Add Exercise"
             variant="primary"
             handleOnPress={addExercise}
-          />
+          /> */}
 
           <S.ModalHeading style={{ marginTop: 28 }}>Add rest</S.ModalHeading>
 
@@ -184,7 +178,7 @@ export default function WorkoutConfiguration({
             mode="light"
           />
 
-          <Button label="Add Rest" variant="primary" handleOnPress={addRest} />
+          {/* <Button label="Add Rest" variant="primary" handleOnPress={addRest} /> */}
         </ScrollView>
       </AppModal>
     </S.Container>

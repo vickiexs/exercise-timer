@@ -10,7 +10,7 @@ export const Container = styled(View)(({ theme }) => ({
 }));
 
 export const FormContainer = styled(View)(({ theme }) => ({
-  gap: theme.spacing(3),
+  gap: theme.spacing(5),
 }));
 
 export const ButtonContainer = styled(View)(({ theme }) => ({

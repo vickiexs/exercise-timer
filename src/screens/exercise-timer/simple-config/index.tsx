@@ -1,45 +1,69 @@
 import { useState, useMemo } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 
-import { SCREENS } from "../../../../lib/constants";
-import useCustomNavigateOnBack from "../../../../lib/hooks/useCustomNavigateOnBack";
+import { SCREENS, REP_MODE, TIMER_TYPE } from "@lib/constants";
+import useCustomNavigateOnBack from "@lib/hooks/useCustomNavigateOnBack";
 
-import Typography from "../../../components/typography";
-import Input from "../../../components/input";
-import Button from "../../../components/button";
+import Typography from "@components/typography";
+import Input from "@components/input";
+import Button from "@components/button";
 
 import * as S from "./styled";
 
-import { ConfigurationScreenProps } from "../type";
+import { SimpleConfigScreenProps, WorkoutPlan } from "../type";
 
-export default function ConfigurationScreen({
+export default function SimpleConfigScreen({
   onStart,
-}: ConfigurationScreenProps) {
+}: SimpleConfigScreenProps) {
   useCustomNavigateOnBack(SCREENS.HOME);
 
-  const [sets, setSets] = useState<number | undefined>();
-  const [reps, setReps] = useState<number | undefined>();
-  const [interSetRest, setInterSetRest] = useState<number | undefined>();
-  const [interRepRest, setInterRepRest] = useState<number | undefined>();
-  const [repWorkTime, setRepWorkTime] = useState<number | undefined>();
+  const [sets, setSets] = useState<number>();
+  const [reps, setReps] = useState<number>();
+  const [interSetRest, setInterSetRest] = useState<number>();
+  const [interRepRest, setInterRepRest] = useState<number>();
+  const [repWorkTime, setRepWorkTime] = useState<number>();
 
   const validForm = useMemo(
     () =>
       [sets, reps, interSetRest, interRepRest, repWorkTime].every(
-        (v) => v !== undefined && v !== 0
+        (value) => value !== undefined && value !== 0
       ),
     [sets, reps, interSetRest, interRepRest, repWorkTime]
   );
 
   const handleStart = () => {
-    if (validForm) {
-      onStart({
-        sets: sets as number,
-        reps: reps as number,
-        interSetRest: interSetRest as number,
-        interRepRest: interRepRest as number,
-        repWorkTime: repWorkTime as number,
+    if (validForm && reps) {
+      let setList = [];
+      for (let i = 0; i < reps; i++) {
+        setList.push({
+          name: "Exercise",
+          repMode: REP_MODE.DURATION,
+          repValue: repWorkTime,
+          type: TIMER_TYPE.EXERCISE,
+        });
+        if (i < reps - 1) {
+          setList.push({
+            name: "Rest",
+            repMode: REP_MODE.DURATION,
+            repValue: interRepRest,
+            type: TIMER_TYPE.REST,
+          });
+        }
+      }
+      setList.push({
+        name: "Break",
+        repMode: REP_MODE.DURATION,
+        repValue: interSetRest,
+        type: TIMER_TYPE.REST,
       });
+
+      const finalPlan = {
+        workout: setList,
+        sets: sets,
+        reps: reps,
+      } as WorkoutPlan;
+
+      onStart(finalPlan);
     }
   };
 
@@ -56,7 +80,7 @@ export default function ConfigurationScreen({
         <Typography variant="heading" style={{ marginBottom: 20 }}>
           Exercise Timer
         </Typography>
-        <Typography variant="body">Configure your workout settings</Typography>
+        <Typography variant="body">Configure your workout settings:</Typography>
         <S.Container>
           <S.FormContainer>
             <Input

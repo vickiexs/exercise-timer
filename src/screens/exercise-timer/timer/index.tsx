@@ -9,19 +9,20 @@ import { Vibration } from "react-native";
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
-import Typography from "../../../components/typography";
-import Button from "../../../components/button";
-import IconButton from "../../../components/icon-button";
-import ProgressBar from "../../../components/progress-bar";
+import Typography from "@components/typography";
+import Button from "@components/button";
+import IconButton from "@components/icon-button";
+import ProgressBar from "@components/progress-bar";
 
-import { formatTime } from "../../../../lib/utils";
-import { SCREENS, EXERCISE, REST } from "../../../../lib/constants";
+import { formatTime } from "@lib/utils";
+import { SCREENS, TIMER_TYPE } from "@lib/constants";
 
 import * as S from "./styled";
 
 import { TimerScreenProps } from "../type";
 
 export default function TimerScreen({
+  configType,
   workoutPlan,
   setIsTimerActive,
 }: TimerScreenProps) {
@@ -78,11 +79,11 @@ export default function TimerScreen({
   const advanceRep = () => {
     if (isLastSet && isLastRep) {
       setIsPaused(true);
-      navigation.navigate(SCREENS.SUCCESS);
+      navigation.navigate(SCREENS.SUCCESS, { configType });
       return;
     }
 
-    if (workout[currentIndex + 1].type === EXERCISE) {
+    if (workout[currentIndex + 1].type === TIMER_TYPE.EXERCISE) {
       setCurrentRep((prev) => prev + 1);
     }
     setCurrentIndex((prev) => prev + 1);
@@ -91,7 +92,7 @@ export default function TimerScreen({
   const advanceSet = () => {
     if (isLastSet) {
       setIsPaused(true);
-      navigation.navigate(SCREENS.SUCCESS);
+      navigation.navigate(SCREENS.SUCCESS, { configType });
       return;
     }
 
@@ -100,7 +101,7 @@ export default function TimerScreen({
 
   const timerColor = useMemo(
     () =>
-      workout[currentIndex].type === EXERCISE
+      workout[currentIndex].type === TIMER_TYPE.EXERCISE
         ? theme.palette.secondary.main
         : theme.palette.tertiary.main,
     [currentIndex]
@@ -115,7 +116,7 @@ export default function TimerScreen({
   const nextExercise = () => {
     let index = currentIndex + 1;
 
-    while (index < workout.length && workout[index].type === REST) {
+    while (index < workout.length && workout[index].type === TIMER_TYPE.REST) {
       index += 1;
     }
 
@@ -129,14 +130,17 @@ export default function TimerScreen({
   };
 
   const prevExercise = () => {
-    if (workout[currentIndex].repValue - timeLeft > 0) {
+    if (
+      workout[currentIndex].type === TIMER_TYPE.EXERCISE &&
+      workout[currentIndex].repValue - timeLeft > 0
+    ) {
       setTimeLeft(workout[currentIndex].repValue);
       return;
     }
 
     let index = currentIndex - 1;
 
-    while (index >= 0 && workout[index].type === REST) {
+    while (index >= 0 && workout[index].type === TIMER_TYPE.REST) {
       index -= 1;
     }
 
@@ -146,7 +150,7 @@ export default function TimerScreen({
 
     if (index < 0 && currentSet > 1) {
       let lastIndex = workout.length - 1;
-      while (lastIndex > 0 && workout[lastIndex].type === REST) {
+      while (lastIndex > 0 && workout[lastIndex].type === TIMER_TYPE.REST) {
         lastIndex -= 1;
       }
 
@@ -156,8 +160,10 @@ export default function TimerScreen({
       return;
     }
 
+    if (workout[currentIndex].type === TIMER_TYPE.EXERCISE) {
+      setCurrentRep((prev) => prev - 1);
+    }
     setCurrentIndex(index);
-    setCurrentRep((prev) => prev - 1);
   };
 
   const overallProgressPercent = useMemo(

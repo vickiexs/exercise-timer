@@ -12,13 +12,22 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import HomeScreen from "./src/screens/home";
-import Workout from "./src/screens/workout";
-import SimpleTimer from "./src/screens/simple-timer";
-import SuccessScreen from "./src/screens/success";
+import ExerciseTimer from "./src/screens/exercise-timer";
+import SuccessScreen from "./src/screens/exercise-timer/success";
 
-import { SCREENS } from "./lib/constants";
+import { SCREENS, CONFIG_TYPE } from "./lib/constants";
 
-const Stack = createNativeStackNavigator();
+export type RootStackParamList = {
+  [SCREENS.HOME]: undefined;
+  [SCREENS.EXERCISE_TIMER]: {
+    configType: CONFIG_TYPE;
+  };
+  [SCREENS.SUCCESS]: {
+    configType: CONFIG_TYPE;
+  };
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const Root = styled.View(({ theme }) => ({
   flex: 1,
@@ -42,8 +51,10 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name={SCREENS.HOME} component={HomeScreen} />
-            <Stack.Screen name={SCREENS.SIMPLE_TIMER} component={SimpleTimer} />
-            <Stack.Screen name={SCREENS.WORKOUT} component={Workout} />
+            <Stack.Screen
+              name={SCREENS.EXERCISE_TIMER}
+              component={ExerciseTimer}
+            />
             <Stack.Screen name={SCREENS.SUCCESS} component={SuccessScreen} />
           </Stack.Navigator>
         </NavigationContainer>

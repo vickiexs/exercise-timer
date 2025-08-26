@@ -1,12 +1,22 @@
-export const SCREENS = {
-  HOME: "Home",
-  SIMPLE_TIMER: "SimpleTimer",
-  WORKOUT: "Workout",
-  SUCCESS: "Success",
-};
+export enum SCREENS {
+  HOME = "Home",
+  EXERCISE_TIMER = "ExerciseTimer",
+  SIMPLE_TIMER = "SimpleTimer",
+  WORKOUT = "Workout",
+  SUCCESS = "Success",
+}
 
-export const DURATION = "duration";
-export const COUNT = "count";
+export enum REP_MODE {
+  DURATION = "duration",
+  COUNT = "count",
+}
 
-export const EXERCISE = "exercise";
-export const REST = "rest";
+export enum TIMER_TYPE {
+  EXERCISE = "exercise",
+  REST = "rest",
+}
+
+export enum CONFIG_TYPE {
+  SIMPLE = "simple",
+  WORKOUT_PLAN = "workoutPlan",
+}
