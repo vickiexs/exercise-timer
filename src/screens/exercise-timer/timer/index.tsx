@@ -73,7 +73,7 @@ export default function TimerScreen({
   }, [timeLeft]);
 
   useEffect(() => {
-    setTimeLeft(workout[currentIndex]?.repValue);
+    setTimeLeft(workout[currentIndex].repValue);
   }, [currentIndex]);
 
   const advanceRep = () => {
@@ -227,7 +227,11 @@ export default function TimerScreen({
               timeLeft === workout[0].repValue
             }
           >
-            <MaterialIcons name="skip-previous" size={32} color="white" />
+            <MaterialIcons
+              name="skip-previous"
+              size={32}
+              color={theme.palette.white}
+            />
           </IconButton>
 
           <IconButton
@@ -237,12 +241,16 @@ export default function TimerScreen({
             <MaterialIcons
               name={isPaused ? "play-arrow" : "pause"}
               size={32}
-              color="white"
+              color={theme.palette.white}
             />
           </IconButton>
 
           <IconButton onPress={nextExercise}>
-            <MaterialIcons name="skip-next" size={32} color="white" />
+            <MaterialIcons
+              name="skip-next"
+              size={32}
+              color={theme.palette.white}
+            />
           </IconButton>
         </S.Controls>
         <Button
