@@ -162,6 +162,14 @@ export default function TimerScreen({
     setCurrentIndex(index);
   };
 
+  const completeReps = () => {
+    setIsPaused(false);
+    if (workout[currentIndex + 1].type === TIMER_TYPE.EXERCISE) {
+      setCurrentRep((prev) => prev + 1);
+    }
+    setCurrentIndex((prev) => prev + 1);
+  };
+
   const overallProgressPercent = useMemo(
     () => (((currentSet - 1) * reps + currentRep) / (sets * reps)) * 100,
     [currentRep, currentSet]
@@ -202,7 +210,7 @@ export default function TimerScreen({
             <Button
               label="Complete"
               variant="primary"
-              handleOnPress={() => setCurrentIndex((prev) => prev + 1)}
+              handleOnPress={completeReps}
               style={{ marginTop: theme.spacing(2) }}
             />
           </View>
