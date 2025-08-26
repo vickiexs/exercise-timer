@@ -1,5 +1,6 @@
 import {
   Modal,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -15,16 +16,21 @@ import { ModalProps } from "./type";
 
 export default function AppModal({ visible, onClose, children }: ModalProps) {
   const theme = useTheme();
+
+  const handleClose = () => {
+    Keyboard.dismiss();
+    onClose();
+  };
   return (
     <Modal
       animationType="slide"
       visible={visible}
       navigationBarTranslucent
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
     >
       <S.Background>
         <S.ModalContent>
-          <IconButton onPress={onClose} style={{ alignSelf: "flex-end" }}>
+          <IconButton onPress={handleClose} style={{ alignSelf: "flex-end" }}>
             <Ionicons name="close" size={28} color={theme.palette.text} />
           </IconButton>
 

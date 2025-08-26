@@ -6,6 +6,9 @@ export const Button = styled(TouchableOpacity)(({ theme }) => ({
   padding: theme.spacing(2.5),
   alignItems: "center",
   borderRadius: theme.borderRadius.large,
+  flexDirection: "row",
+  gap: theme.spacing(1),
+  justifyContent: "center",
 }));
 
 export const ButtonText = styled(Text)(({ theme }) => ({
@@ -27,6 +30,16 @@ export const PrimaryButton = styled(Button)<{ disabled?: boolean }>(
 
 export const SecondaryButton = styled(Button)(({ theme }) => ({
   backgroundColor: "transparent",
-  borderWidth: "1px",
+  borderWidth: 1,
   borderColor: theme.palette.white,
+}));
+
+export const TertiaryButton = styled(Button)(() => ({
+  backgroundColor: "transparent",
+}));
+
+export const TertiaryButtonText = styled(ButtonText)(({ theme }) => ({
+  fontSize: theme.fontSize(3.5),
+  color: theme.palette.white,
+  marginTop: 0,
 }));

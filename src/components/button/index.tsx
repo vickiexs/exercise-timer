@@ -6,6 +6,7 @@ export default function Button({
   label,
   variant = "primary",
   disabled = false,
+  icon,
   style,
   handleOnPress,
 }: ButtonProps) {
@@ -18,7 +19,19 @@ export default function Button({
           style={style}
         >
           <S.ButtonText>{label}</S.ButtonText>
+          {icon}
         </S.SecondaryButton>
+      );
+    case "tertiary":
+      return (
+        <S.TertiaryButton
+          onPress={handleOnPress}
+          disabled={disabled}
+          style={style}
+        >
+          <S.TertiaryButtonText>{label}</S.TertiaryButtonText>
+          {icon}
+        </S.TertiaryButton>
       );
     default:
       return (
@@ -28,6 +41,7 @@ export default function Button({
           style={style}
         >
           <S.ButtonText>{label}</S.ButtonText>
+          {icon}
         </S.PrimaryButton>
       );
   }

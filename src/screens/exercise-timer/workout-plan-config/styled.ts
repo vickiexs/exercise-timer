@@ -29,6 +29,12 @@ export const WorkoutPlanSection = styled(View)(({ theme }) => ({
   marginVertical: theme.spacing(5),
 }));
 
+export const WorkoutPlanHeadingContainer = styled(View)(({ theme }) => ({
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+}));
+
 export const WorkoutPlanContainer = styled(View)(({ theme }) => ({
   flex: 1,
   gap: theme.spacing(2),

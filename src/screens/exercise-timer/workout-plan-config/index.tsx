@@ -1,16 +1,15 @@
 import { useState, useMemo } from "react";
-import { FlatList, ScrollView, View } from "react-native";
+import { FlatList, View } from "react-native";
 import { useTheme } from "styled-components/native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import useCustomNavigateOnBack from "@lib/hooks/useCustomNavigateOnBack";
-import { SCREENS } from "@lib/constants";
+import { SCREENS, REP_MODE, TIMER_TYPE } from "@lib/constants";
 
 import Typography from "@components/typography";
 import Button from "@components/button";
 import Input from "@components/input";
 import AppModal from "@components/modal";
-
-import { REP_MODE, TIMER_TYPE } from "@lib/constants";
 
 import * as S from "./styled";
 import { Label } from "@components/input/styled";
@@ -37,7 +36,10 @@ export default function WorkoutPlanConfigScreen({
     () =>
       [sets, interSetRest].every(
         (value) => value !== undefined && value !== 0
-      ) && workoutPlan.length > 0,
+      ) &&
+      workoutPlan.length > 0 &&
+      workoutPlan[0].type !== TIMER_TYPE.REST &&
+      workoutPlan[workoutPlan.length - 1].type !== TIMER_TYPE.REST,
     [sets, interSetRest, workoutPlan]
   );
 
@@ -163,13 +165,32 @@ export default function WorkoutPlanConfigScreen({
       </S.SetInfoContainer>
 
       <Button
-        label="Add Exercise/Rest +"
+        label="Add Exercise/Rest"
         variant="secondary"
         handleOnPress={() => setModalVisible(true)}
+        icon={
+          <MaterialIcons name="add" size={24} color={theme.palette.white} />
+        }
       />
 
       <S.WorkoutPlanSection>
-        <Typography variant="subheading">Workout Plan</Typography>
+        <S.WorkoutPlanHeadingContainer>
+          <Typography variant="subheading">Workout Plan</Typography>
+          {workoutPlan.length > 0 && (
+            <Button
+              label="Reset plan"
+              variant="tertiary"
+              handleOnPress={() => setWorkoutPlan([])}
+              icon={
+                <MaterialIcons
+                  name="refresh"
+                  size={16}
+                  color={theme.palette.white}
+                />
+              }
+            />
+          )}
+        </S.WorkoutPlanHeadingContainer>
         <S.WorkoutPlanContainer>
           {workoutPlan.length === 0 ? (
             <Typography
